@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import { TextInput, Button, CheckBox } from "react-native-rapi-ui";
 import FormField from "../components/form/FormField";
 import FormWrapper from "../components/form/FormWrapper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   formSchema,
@@ -10,6 +11,7 @@ import {
   objetosSchema,
   veiculoSchema,
   historicoSchema,
+  cadastroSchema,
 } from "../helpers/formSchema";
 import { Layout, TopNav } from "react-native-rapi-ui";
 import { Section, SectionContent } from "react-native-rapi-ui";
@@ -21,6 +23,7 @@ import ObjetosForm from "../components/widgets/ObjetosForm";
 import VeiculoForm from "../components/widgets/VeiculoForm";
 import HistoricoForm from "../components/widgets/HistoricoForm";
 import { API_URL } from "../helpers/constants";
+import CadastroForm from "../components/widgets/CadastroForm";
 
 const validate = (values, props /* only available when using withFormik */) => {
   const errors = {};
@@ -32,19 +35,35 @@ const validate = (values, props /* only available when using withFormik */) => {
     errors.email = "Invalid email address";
   }
 
-
-
-
   //...
 
   return errors;
 };
 
 const NewBO = ({ navigation }) => {
+  const [dadosUser, setDadosUser] = useState();
+  const [perfil, setPerfil] = useState();
+  const [bo, setBo] = useState();
+  const [boComDados, setBoComDados] = useState()
+
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("@storage_Key");
+      if (jsonValue !== null) {
+        setDadosUser(jsonValue);
+      }
+      //return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      // error reading value
+    }
+  };
+
   const [form, setForm] = useState(formSchema);
   const [pessoasForm, setPessoasForm] = useState(personSchema);
   const [objetosForm, setObjetosForm] = useState(objetosSchema);
   const [veiculoForm, setVeiculoForm] = useState(veiculoSchema);
+  const [cadastroForm, setCadastroForm] = useState(cadastroSchema);
+
   const [historicoForm, setHistoricoForm] = useState(historicoSchema);
   const [showPersonsForm, togglePersonsFormVisibility] = useState(false);
   const [showObjetosForm, toggleObjetosFormVisibility] = useState(false);
@@ -52,66 +71,108 @@ const NewBO = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [dados, setDados] = React.useState("");
 
-
-
-
-
-
-
-
   const objetoAlert = () =>
-  Alert.alert(
-    "Adicionar novo objeto",
-    "Você tem certeza que deseja adicionar um novo objeto ?",
-    [
-      {
-        text: "Cancelar",
-        onPress: () => console.log("Cancelelado"),
-        style: "cancel"
-      },
-      { text: "OK", onPress: () => setObjetosForm([...objetosForm, objetosSchema[0]]) }
-    ],
-    { cancelable: false }
-  );
-
-
+    Alert.alert(
+      "Adicionar novo objeto",
+      "Você tem certeza que deseja adicionar um novo objeto ?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => console.log("Cancelelado"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => setObjetosForm([...objetosForm, objetosSchema[0]]),
+        },
+      ],
+      { cancelable: false }
+    );
 
   const veiculoAlert = () =>
-  Alert.alert(
-    "Adicionar novo veículo",
-    "Você tem certeza que deseja adicionar um novo veículo ?",
-    [
-      {
-        text: "Cancelar",
-        onPress: () => console.log("Cancelelado"),
-        style: "cancel"
-      },
-      { text: "OK", onPress: () => setVeiculoForm([...veiculoForm, veiculoSchema[0]]) }
-    ],
-    { cancelable: false }
-  );
-
-
-
-
+    Alert.alert(
+      "Adicionar novo veículo",
+      "Você tem certeza que deseja adicionar um novo veículo ?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => console.log("Cancelelado"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => setVeiculoForm([...veiculoForm, veiculoSchema[0]]),
+        },
+      ],
+      { cancelable: false }
+    );
 
   const pessoaAlert = () =>
-  Alert.alert(
-    "Adicionar nova pessoa",
-    "Você tem certeza que deseja adicionar uma nova pessoa ?",
-    [
+    Alert.alert(
+      "Adicionar nova pessoa",
+      "Você tem certeza que deseja adicionar uma nova pessoa ?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => console.log("Cancelelado"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => setPessoasForm([...pessoasForm, personSchema[0]]),
+        },
+      ],
+      { cancelable: false }
+    );
+
+  /// getApi
+
+  function fetchData() {
+    fetch(
+      "https://loginbo.herokuapp.com/users/authenticate",
+
       {
-        text: "Cancelar",
-        onPress: () => console.log("Cancelelado"),
-        style: "cancel"
-      },
-      { text: "OK", onPress: () => setPessoasForm([...pessoasForm, personSchema[0]]) }
-    ],
-    { cancelable: false }
-  );
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        //JSON.stringify(dadosUser)
+        body: dadosUser,
+      }
+    )
+      .then(async (response) => {
+        const isJson = response.headers
+          .get("content-type")
+          ?.includes("application/json");
+        const data = isJson && (await response.json());
+
+        if (response.ok) {
+          setPerfil(data);
+        }
+
+        // check for error response
+        if (!response.ok) {
+          // get error message from body or default to response status
+          const error = (data && data.message) || response.status;
+          return Promise.reject(error);
+        }
+      })
+      .catch((error) => {
+        alert(error);
+        console.error("There was an error!", error);
+      });
+  }
+  useEffect(getPerfil);
+
+  function getPerfil(value) {
+    getData();
+    fetchData();
+   setBoComDados(JSON.stringify({ bo, perfil }));
+    //fiqi aqui 
 
 
+  }
+ 
 
+  
 
   return (
     <Layout>
@@ -129,7 +190,7 @@ const NewBO = ({ navigation }) => {
               fontFamily: "RobotoCondensed_700Bold",
               marginBottom: 10,
             }}
-          >
+          >{}
             BOLETIM DE OCORRÊNCIA - POLÍCIA MILITAR
           </Text>
           <FormWrapper>
@@ -142,12 +203,14 @@ const NewBO = ({ navigation }) => {
                   headers: {
                     "Content-Type": "application/json",
                   },
-                  body: JSON.stringify(values),
+                  body: boComDados,
                 })
                   .then((res) => res.json())
                   .then((res) => {
                     console.log(res);
                     if (!res.error) {
+                      setBo(values);
+
                       alert("Dados salvos com sucesso");
                       navigation.goBack();
                     }
@@ -160,13 +223,10 @@ const NewBO = ({ navigation }) => {
 
                     console.error(err);
                   });
+
               }}
             >
               {(formikObj) => (
-
-
-
-
                 <View style={{ flex: 1, paddingBottom: 200 }}>
                   <FormGroup>
                     {form.map((formField, i) => (
@@ -199,12 +259,6 @@ const NewBO = ({ navigation }) => {
                       style={{ marginBottom: 10 }}
                       text="Adicionar Envolvido"
                     />
-
-               
-
-
-
-
                   </FormGroup>
 
                   <View style={{ margin: 15 }}></View>
@@ -222,7 +276,7 @@ const NewBO = ({ navigation }) => {
 
                     <Button
                       color="gray"
-                     onPress={objetoAlert}
+                      onPress={objetoAlert}
                       leftContent={
                         <Ionicons name="archive" color="white" size={34} />
                       }
@@ -246,9 +300,7 @@ const NewBO = ({ navigation }) => {
 
                     <Button
                       color="gray"
-                      onPress={
-                        veiculoAlert
-                      }
+                      onPress={veiculoAlert}
                       leftContent={
                         <Ionicons name="car" color="white" size={34} />
                       }
@@ -272,11 +324,12 @@ const NewBO = ({ navigation }) => {
                     loading={loading}
                     onPress={formikObj.handleSubmit}
                     text="Salvar"
-                    
                   />
-                   <View style={{ padding: 10 }}></View>
+               
+
+                  <Text>{dadosUser}</Text>
+                  <View style={{ padding: 10 }}></View>
                 </View>
-                
               )}
             </Formik>
           </FormWrapper>
