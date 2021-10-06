@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from 'react'
-import { Linking, View, ScrollView, TouchableOpacity } from 'react-native'
+import { Linking, View, ScrollView } from 'react-native'
 import { Button, Layout, TopNav, Text, theme } from 'react-native-rapi-ui'
 import { Ionicons } from '@expo/vector-icons'
 import {API_URL, MAIN_URL} from "../helpers/constants";
 import { formSchema } from '../helpers/formSchema';
 import Loader from '../components/utils/Loader';
-import { FontAwesome } from "@expo/vector-icons";
 
 export default function ({ route, navigation }) {
 
@@ -103,10 +102,6 @@ export default function ({ route, navigation }) {
             }
 
         }}></Button>
-
-                
-
-
       </View>
       </ScrollView>
 

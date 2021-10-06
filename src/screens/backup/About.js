@@ -4,25 +4,32 @@ import { Button, View } from "react-native";
 import { Layout, Text, TextInput } from "react-native-rapi-ui";
 import FormWrapper from "../components/form/FormWrapper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {removeValue} from '../services/storage';
-import {AuthRoutes} from '../navigation/auth.routes'
-import {getData} from '../services/storage'
-import App from "../../App";
-
 
 export default function ({ navigation }) {
-  
+  const removeValue = async () => {
+    try {
+      await AsyncStorage.removeItem("@storage_usuarios");
 
-  
-  function teste  () {
-removeValue()
+      navigation.navigate("Login");
 
-navigation.navigate("Login")
-    
+    } catch (e) {
+      // remove error
+    }
 
-  }
+    console.log("Done.");
+  };
 
-  
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("@storage_usuarios");
+
+      if (jsonValue == null) {
+        alert(jsonValue);
+      }
+    } catch (e) {
+      // error reading value
+    }
+  };
 
   return (
     <Layout>
@@ -50,9 +57,9 @@ navigation.navigate("Login")
               <TextInput placeholder="Lotação"></TextInput>
               <TextInput placeholder="Matrícula"></TextInput>
 
-              <Button title="Sair" onPress={teste}></Button>
+              <Button title="apagar" onPress={removeValue}></Button>
 
-              
+              <Button title="get" onPress={getData}></Button>
             </>
           )}
         </Formik>

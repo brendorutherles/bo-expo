@@ -7,7 +7,7 @@ import FormField from '../form/FormField';
 const CadastroForm = ({fields, formikObj, index}) => {
     return (
         <View style={styles.container}>
-            <Text style={{ fontWeight:'bold' ,fontSize:15,paddingBottom:5 ,color:'#e24533'}}>Histórico</Text>
+            <Text style={{ fontWeight:'bold' ,fontSize:20,paddingBottom:5 ,color:'#e24533'}}>Envolvido {index+1}</Text>
             {
                 fields.map( (field, idx) => (
                     <FormField 
@@ -18,7 +18,7 @@ const CadastroForm = ({fields, formikObj, index}) => {
             }
            
         </View>
-        )
+    );
 };
 
 // define your styles

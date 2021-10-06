@@ -1,9 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import { TextInput, Button, CheckBox } from "react-native-rapi-ui";
 import FormField from "../components/form/FormField";
 import FormWrapper from "../components/form/FormWrapper";
-import { formSchema, personSchema, objetosSchema } from "../helpers/formSchema";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import {
+  formSchema,
+  personSchema,
+  objetosSchema,
+  veiculoSchema,
+  historicoSchema,
+  cadastroSchema,
+} from "../helpers/formSchema";
 import { Layout, TopNav } from "react-native-rapi-ui";
 import { Section, SectionContent } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,17 +20,19 @@ import { FieldArray, Formik } from "formik";
 import FormGroup from "../components/form/FormGroup";
 import PersonForm from "../components/widgets/PersonForm";
 import ObjetosForm from "../components/widgets/ObjetosForm";
+import VeiculoForm from "../components/widgets/VeiculoForm";
+import HistoricoForm from "../components/widgets/HistoricoForm";
 import { API_URL } from "../helpers/constants";
-
-
+import CadastroForm from "../components/widgets/CadastroForm";
 
 const validate = (values, props /* only available when using withFormik */) => {
   const errors = {};
+  console.log("values" + JSON.stringify(values));
 
   if (!values.pai) {
-    errors.pai= 'Required';
+    errors.pai = "Required";
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.pai)) {
-    errors.email = 'Invalid email address';
+    errors.email = "Invalid email address";
   }
 
   //...
@@ -29,20 +40,117 @@ const validate = (values, props /* only available when using withFormik */) => {
   return errors;
 };
 
-
-
-
-
-
 const NewBO = ({ navigation }) => {
+  const [dadosUser, setDadosUser] = useState();
+  const [perfil, setPerfil] = useState();
+  const [bo, setBo] = useState();
+  const [boComDados, setBoComDados] = useState();
+
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("@storage_Key");
+      if (jsonValue !== null) {
+        fetch(
+          "https://loginbo.herokuapp.com/users/authenticate",
+
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            //JSON.stringify(dadosUser)
+            body: jsonValue,
+          }
+        )
+          .then(async (response) => {
+            const isJson = response.headers
+              .get("content-type")
+              ?.includes("application/json");
+            const data = isJson && (await response.json());
+
+            if (response.ok) {
+              setPerfil(data);
+            }
+          })
+          .catch((error) => {});
+      }
+      //return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      // error reading value
+    }
+  };
+
   const [form, setForm] = useState(formSchema);
   const [pessoasForm, setPessoasForm] = useState(personSchema);
   const [objetosForm, setObjetosForm] = useState(objetosSchema);
+  const [veiculoForm, setVeiculoForm] = useState(veiculoSchema);
+  const [cadastroForm, setCadastroForm] = useState(cadastroSchema);
+
+  const [historicoForm, setHistoricoForm] = useState(historicoSchema);
   const [showPersonsForm, togglePersonsFormVisibility] = useState(false);
   const [showObjetosForm, toggleObjetosFormVisibility] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [dados, setDados] = React.useState("");
+
+  const objetoAlert = () =>
+    Alert.alert(
+      "Adicionar novo objeto",
+      "Você tem certeza que deseja adicionar um novo objeto ?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => console.log("Cancelelado"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => setObjetosForm([...objetosForm, objetosSchema[0]]),
+        },
+      ],
+      { cancelable: false }
+    );
+
+  const veiculoAlert = () =>
+    Alert.alert(
+      "Adicionar novo veículo",
+      "Você tem certeza que deseja adicionar um novo veículo ?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => console.log("Cancelelado"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => setVeiculoForm([...veiculoForm, veiculoSchema[0]]),
+        },
+      ],
+      { cancelable: false }
+    );
+
+  const pessoaAlert = () =>
+    Alert.alert(
+      "Adicionar nova pessoa",
+      "Você tem certeza que deseja adicionar uma nova pessoa ?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => console.log("Cancelelado"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => setPessoasForm([...pessoasForm, personSchema[0]]),
+        },
+      ],
+      { cancelable: false }
+    );
+
+  /// getApi
+
+  function getPerfil(value) {
+    getData();
+  }
+  useEffect(getPerfil);
 
   return (
     <Layout>
@@ -73,7 +181,8 @@ const NewBO = ({ navigation }) => {
                   headers: {
                     "Content-Type": "application/json",
                   },
-                  body: JSON.stringify(values),
+
+                  body: JSON.stringify(  { ...perfil , ...values  } ),
                 })
                   .then((res) => res.json())
                   .then((res) => {
@@ -115,11 +224,11 @@ const NewBO = ({ navigation }) => {
                         formikObj={formikObj}
                       />
                     ))}
+                    <View style={{ padding: 10 }}></View>
+
                     <Button
                       color="gray"
-                      onPress={() => {
-                        setPessoasForm([...pessoasForm, personSchema[0]]);
-                      }}
+                      onPress={pessoaAlert}
                       leftContent={
                         <Ionicons name="person" color="white" size={34} />
                       }
@@ -139,11 +248,11 @@ const NewBO = ({ navigation }) => {
                         formikObj={formikObj}
                       />
                     ))}
+                    <View style={{ padding: 10 }}></View>
+
                     <Button
                       color="gray"
-                      onPress={() => {
-                        setObjetosForm([...objetosForm, objetosSchema[0]]);
-                      }}
+                      onPress={objetoAlert}
                       leftContent={
                         <Ionicons name="archive" color="white" size={34} />
                       }
@@ -152,11 +261,48 @@ const NewBO = ({ navigation }) => {
                     />
                   </FormGroup>
 
+                  <View style={{ margin: 15 }}></View>
+
+                  <FormGroup>
+                    {veiculoForm.map((formFields, i) => (
+                      <VeiculoForm
+                        fields={formFields}
+                        key={i}
+                        index={i}
+                        formikObj={formikObj}
+                      />
+                    ))}
+                    <View style={{ padding: 10 }}></View>
+
+                    <Button
+                      color="gray"
+                      onPress={veiculoAlert}
+                      leftContent={
+                        <Ionicons name="car" color="white" size={34} />
+                      }
+                      style={{ marginBottom: 10 }}
+                      text="Adicionar Veículo"
+                    />
+                  </FormGroup>
+                  <View style={{ padding: 10 }}></View>
+                  <FormGroup>
+                    {historicoForm.map((formFields, i) => (
+                      <HistoricoForm
+                        fields={formFields}
+                        key={i}
+                        index={i}
+                        formikObj={formikObj}
+                      />
+                    ))}
+                  </FormGroup>
+                  <View style={{ padding: 10 }}></View>
                   <Button
                     loading={loading}
                     onPress={formikObj.handleSubmit}
                     text="Salvar"
                   />
+
+                  <View style={{ padding: 10 }}></View>
                 </View>
               )}
             </Formik>

@@ -1,17 +1,18 @@
 //FormikTextInputt liraries
 import React, { Component } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import TextInput  from "../form/TextInput";
+import { TextInput } from "react-native-rapi-ui";
 //import { TextInput } from "react-native";
 
 import FormDatePicker from "./inputs/FormDatePicker";
-import Historico from "./inputs/Historico";
-import FormDuoSelect from "./inputs/FormDuoSelect";
-import FormSelect from "./inputs/FormSelect";
 import FormHora from "./inputs/FormHora";
 
+import Historico from "./inputs/Historico";
+import FormTimePicker from "./inputs/FormTimePicker";
+import FormDuoSelect from "./inputs/FormDuoSelect";
+import Select from "./inputs/FormSelect";
 
-
+import Datahora from "./inputs/FormHSora";
 
 // create a component
 const FormField = ({ attrs, formikObj }) => {
@@ -29,10 +30,6 @@ const FormField = ({ attrs, formikObj }) => {
             underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={handleChange(name)}
             value={values[name]}
-            autoCapitalize="none"
-            keyboardAppearance="dark"
-            returnKeyType="next"
-            returnKeyLabel="next"
             {...formikObj}
           />
         );
@@ -43,16 +40,26 @@ const FormField = ({ attrs, formikObj }) => {
         );
         break;
 
-  
-      case "hora":
-        return (<FormHora attrs={attrs} value={values[name]} {...formikObj} />);
+        case "select":
+          return (
+            <Select
+            attrs={attrs}
+            {...formikObj}
+            value={values[name]}
+           {...otherProps}
+          />
+            
+                  );
+          break;
+
+      case "time":
+        return <FormHora attrs={attrs} value={values[name]} {...formikObj} />;
         break;
 
       case "textLongo":
         return (
           <Historico
             placeholder={placeholder}
-            options={options}
             onChangeText={handleChange(name)}
             value={values[name]}
             {...formikObj}
@@ -63,10 +70,9 @@ const FormField = ({ attrs, formikObj }) => {
 
       case "select":
         return (
-          <FormSelect
-          placeholder={placeholder}
-          options={options}
+          <Select
           attrs={attrs}
+          value={values[name]}
           {...formikObj}
           {...otherProps}
         />
@@ -79,7 +85,6 @@ const FormField = ({ attrs, formikObj }) => {
             value={values[name]}
             {...formikObj}
             {...otherProps}
-            options={options}
           />
         );
         break;

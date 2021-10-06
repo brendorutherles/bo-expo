@@ -1,5 +1,5 @@
-import React, { useState,useEffect } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, ActivityIndicator ,Alert } from "react-native";
 import { TextInput, Button, CheckBox } from "react-native-rapi-ui";
 import FormField from "../components/form/FormField";
 import FormWrapper from "../components/form/FormWrapper";
@@ -40,23 +40,33 @@ const validate = (values, props /* only available when using withFormik */) => {
   return errors;
 };
 
+
+
 const NewBO = ({ navigation }) => {
+  const [spinner, setSpinner] = useState(false)
+
+
+  function setspiner (value){
+    setSpinner(value)
+  }
+
   const [dadosUser, setDadosUser] = useState();
   const [perfil, setPerfil] = useState();
   const [bo, setBo] = useState();
-  const [boComDados, setBoComDados] = useState()
+  const [boComDados, setBoComDados] = useState();
+
+
 
   const getData = async () => {
     try {
-      const jsonValue = await AsyncStorage.getItem("@storage_Key");
-      if (jsonValue !== null) {
-        setDadosUser(jsonValue);
-      }
-      //return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (e) {
+      const jsonValue = await AsyncStorage.getItem('@storage_dadosUser')
+      setPerfil( JSON.parse(jsonValue)) 
+    } catch(e) {
       // error reading value
     }
-  };
+  }
+  
+
 
   const [form, setForm] = useState(formSchema);
   const [pessoasForm, setPessoasForm] = useState(personSchema);
@@ -127,52 +137,10 @@ const NewBO = ({ navigation }) => {
 
   /// getApi
 
-  function fetchData() {
-    fetch(
-      "https://loginbo.herokuapp.com/users/authenticate",
-
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        //JSON.stringify(dadosUser)
-        body: dadosUser,
-      }
-    )
-      .then(async (response) => {
-        const isJson = response.headers
-          .get("content-type")
-          ?.includes("application/json");
-        const data = isJson && (await response.json());
-
-        if (response.ok) {
-          setPerfil(data);
-        }
-
-        // check for error response
-        if (!response.ok) {
-          // get error message from body or default to response status
-          const error = (data && data.message) || response.status;
-          return Promise.reject(error);
-        }
-      })
-      .catch((error) => {
-        alert(error);
-        console.error("There was an error!", error);
-      });
-  }
-  useEffect(getPerfil);
-
   function getPerfil(value) {
     getData();
-    fetchData();
-   setBoComDados(JSON.stringify({ bo, perfil }));
-    //fiqi aqui 
-
-
   }
- 
-
-  
+  useEffect(getPerfil);
 
   return (
     <Layout>
@@ -190,7 +158,7 @@ const NewBO = ({ navigation }) => {
               fontFamily: "RobotoCondensed_700Bold",
               marginBottom: 10,
             }}
-          >{}
+          >
             BOLETIM DE OCORRÊNCIA - POLÍCIA MILITAR
           </Text>
           <FormWrapper>
@@ -203,14 +171,13 @@ const NewBO = ({ navigation }) => {
                   headers: {
                     "Content-Type": "application/json",
                   },
-                  body: boComDados,
+
+                  body: JSON.stringify(  { ...perfil , ...values  } ),
                 })
                   .then((res) => res.json())
                   .then((res) => {
                     console.log(res);
                     if (!res.error) {
-                      setBo(values);
-
                       alert("Dados salvos com sucesso");
                       navigation.goBack();
                     }
@@ -223,7 +190,6 @@ const NewBO = ({ navigation }) => {
 
                     console.error(err);
                   });
-
               }}
             >
               {(formikObj) => (
@@ -321,13 +287,23 @@ const NewBO = ({ navigation }) => {
                   </FormGroup>
                   <View style={{ padding: 10 }}></View>
                   <Button
-                    loading={loading}
                     onPress={formikObj.handleSubmit}
                     text="Salvar"
+                    
                   />
-               
 
-                  <Text>{dadosUser}</Text>
+<Button
+                    onPress={ () => {
+                      alert(  perfil)
+                    }}
+                    text="Salvar"
+                    
+                  />
+
+                  <ActivityIndicator
+      animating={spinner}
+      size="large" />
+
                   <View style={{ padding: 10 }}></View>
                 </View>
               )}

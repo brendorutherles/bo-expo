@@ -16,7 +16,22 @@ const FormDatePicker = props => {
       confirmBtnText='Confirmar'
       format='DD/MM/YYYY'
       cancelBtnText='Cancelar'
-      showIcon={false}
+      showIcon={true}
+      
+      customStyles={{
+        dateIcon: {
+          position: 'absolute',
+          left: 0,
+          top: 4,
+          marginLeft: 0
+        },
+        dateInput: {
+          marginLeft: 36
+        }
+        // ... You can check the source to find the other keys.
+      }}
+
+    
       onDateChange={date => {
         setFieldValue(name, date)
       }}

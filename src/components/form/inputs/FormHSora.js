@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import DatePicker from 'react-native-datepicker'
 
 // create a component
-const FormHora = props => {
+const FormDatePicker = props => {
   const { name, values, setFieldValue, ...rest } = props
 
   return (
@@ -14,8 +14,9 @@ const FormHora = props => {
       mode='time'
       placeholder='Selecione a hora'
       confirmBtnText='Confirmar'
+      format='      HH:MM'
       cancelBtnText='Cancelar'
-      showIcon={false}
+      showIcon={true}
       
       customStyles={{
         dateIcon: {
@@ -46,4 +47,4 @@ const styles = StyleSheet.create({
 })
 
 //make this component available to the app
-export default FormHora
+export default FormDatePicker

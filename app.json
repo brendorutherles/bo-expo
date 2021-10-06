@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "bo-eletronico",
-    "slug": "bo-eletronico",
-    "version": "0.0.1",
+    "name": "bo-eletronico-teste",
+    "slug": "bo-eletronico-teste",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -17,7 +17,7 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.rutherles.boeletronico"
     },
     "web": {

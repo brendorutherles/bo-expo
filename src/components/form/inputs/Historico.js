@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 
 const styles = StyleSheet.create({
@@ -27,8 +28,8 @@ const Historico = (props) => {
       multiline
       numberOfLines={16}
       maxLength={400000}
+      
     /> 
-
 </View>
 
   );

@@ -11,7 +11,6 @@ import {
 } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getData} from '../services/storage'
 
 
 
@@ -20,8 +19,22 @@ import {getData} from '../services/storage'
 export default function ({ navigation }) {
   const [dadosUser, setDadosUser] = useState()
 
+function getData(params) {
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('@storage_login')
+      if (jsonValue !== null) {
+       setDadosUser(jsonValue)
+      }
+      //return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch(e) {
+      // error reading value
+    }
+  }
   
+}
 
+  useEffect(getData)
 
 
   
@@ -94,7 +107,7 @@ export default function ({ navigation }) {
         <Section style={{ width: "100%" }}>
           <TouchableOpacity
             onPress={() => {
-           
+              getData;
             }}
             style={{
               backgroundColor: "rgb(34, 34, 34)",
