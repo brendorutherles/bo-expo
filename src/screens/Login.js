@@ -35,7 +35,7 @@ const Login = ({ navigation }) => {
 
     onSubmit: (values) =>
       fetch(
-        "https://loginbo.herokuapp.com/users/authenticate",
+        "https://login-paladino.rutherles.com/users/authenticate",
 
         {
           method: "POST",

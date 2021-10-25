@@ -43,7 +43,7 @@ export default function ({ navigation }) {
     
 
       fetch(
-        "https://loginbo.herokuapp.com/users/register",
+        "https://login-paladino.rutherles.com/users/register",
 
         {
           method: "POST",

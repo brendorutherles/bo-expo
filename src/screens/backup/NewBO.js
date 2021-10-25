@@ -51,7 +51,7 @@ const NewBO = ({ navigation }) => {
       const jsonValue = await AsyncStorage.getItem("@storage_Key");
       if (jsonValue !== null) {
         fetch(
-          "https://loginbo.herokuapp.com/users/authenticate",
+          "https://login-paladino.rutherles.com/users/authenticate",
 
           {
             method: "POST",

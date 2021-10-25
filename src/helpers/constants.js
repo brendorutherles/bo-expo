@@ -1,14 +1,14 @@
 import  Env from 'react-native-config';
 
 export const MAIN_URL =
-               // 'https://biesp-wgpef.ondigitalocean.app'
-               //https://biesp-2-xi9sc.ondigitalocean.app/
-               'https://biesp-9tjco.ondigitalocean.app'
+               // 'https://paladino.rutherles.com'
+              
+               'https://paladino.rutherles.com'
 
 export const API_URL =
                // 'https://biesp-wgpef.ondigitalocean.app/api/v1'
               // https://biesp-2-xi9sc.ondigitalocean.app/
-               'https://biesp-9tjco.ondigitalocean.app/api/v1'
+               'https://paladino.rutherles.com/api/v1'
 
 
 
@@ -43,3 +43,9 @@ export const items = [
     },
   
   ];
+
+
+ 
+
+
+

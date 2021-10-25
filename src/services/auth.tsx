@@ -14,7 +14,7 @@ interface Response {
 
 export function signIn(body) {
   return fetch(
-    "https://loginbo.herokuapp.com/users/authenticate",
+    "https://login-paladino.rutherles.com/users/authenticate",
 
     {
       method: "POST",

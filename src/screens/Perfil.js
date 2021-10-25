@@ -17,7 +17,7 @@ export default function ({ navigation }) {
 
     onSubmit: (values) =>
       fetch(
-        "https://loginbo.herokuapp.com/users/register",
+        "https://login-paladino.rutherles.com/users/register",
 
         {
           method: "POST",

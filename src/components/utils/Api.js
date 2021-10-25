@@ -4,7 +4,7 @@ import axios from "axios";
 // http://localhost:3000
 
 const api = axios.create({
-  baseURL: "https://loginbo.herokuapp.com/users/register",
+  baseURL: "https://login-paladino.rutherles.com/users/register",
 });
 
 export default api;

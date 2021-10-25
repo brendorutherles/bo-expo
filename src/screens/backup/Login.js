@@ -21,7 +21,7 @@ const Login = ({ navigation }) => {
     initialValues: { username: "", password: "" },
     onSubmit: (values) =>
       fetch(
-        "https://loginbo.herokuapp.com/users/authenticate",
+        "https://login-paladino.rutherles.com/users/authenticate",
 
         {
           method: "POST",
@@ -54,7 +54,7 @@ const Login = ({ navigation }) => {
 
   function setUser() {
     fetch(
-      "https://loginbo.herokuapp.com/users/authenticate",
+      "https://login-paladino.rutherles.com/users/authenticate",
 
       {
         method: "POST",
